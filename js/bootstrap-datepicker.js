@@ -1,8 +1,12 @@
+
 /* =========================================================
  * bootstrap-datepicker.js
  * Repo: https://github.com/uxsolutions/bootstrap-datepicker/
  * Demo: https://uxsolutions.github.io/bootstrap-datepicker/
  * Docs: https://bootstrap-datepicker.readthedocs.org/
+ * =========================================================
+ * Edited by: Ronny Brekke, Bærum kommune
+ * Changes: Added support for typing dates without separators
  * =========================================================
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1895,6 +1899,41 @@
 					p = parts[i].slice(0, m.length);
 				return m.toLowerCase() === p.toLowerCase();
 			}
+			// Date without separators 
+			if (parts.length === 1 && !isNaN(parts[0]) && fparts.length > 1) {
+				val = parts[0];
+				for (i = 0; i < fparts.length; i++) {
+					part = val.substring(0, fparts[i].length);
+					val = val.substring(fparts[i].length);
+					switch (fparts[i]) {
+						case 'dd':
+							parts[i] = isNaN(part) ? date.getDate() : part;
+							break;
+						case 'MM':
+							parts[i] = isNaN(part) ? date.getMonth() : part;
+							break;
+						case 'yy':
+						case 'yyyy':
+							switch (true) {
+								case (isNaN(part)):
+								case (part < 1):
+									parts[i] = date.getFullYear();
+									break;
+								case (1999 + parseInt(part) <= date.getFullYear()):
+									parts[i] = (2000 + parseInt(part)).toString();
+									break;
+								case (part < 100):
+									parts[i] = (1900 + parseInt(part)).toString();
+									break;
+								default:
+									parts[i] = part;
+                            }
+							break;
+						default:
+							parts[i] = part;
+                    }
+                }
+            }
 			if (parts.length === fparts.length){
 				var cnt;
 				for (i=0, cnt = fparts.length; i < cnt; i++){
